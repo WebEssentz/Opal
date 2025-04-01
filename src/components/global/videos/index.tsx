@@ -4,8 +4,10 @@ import VideoRecorderDuotone from '@/components/icons/video-recorder-duotone'
 import { useQueryData } from '@/hooks/useQueryData'
 import { cn } from '@/lib/utils'
 import { VideosProps } from '@/types/index.type'
+import { WifiOff } from 'lucide-react'
 import React from 'react'
 import VideoCard from './video-card'
+import { useNetwork } from '@/hooks/use-network'
 
 type Props = {
   folderId: string
@@ -14,6 +16,7 @@ type Props = {
 }
 
 const Videos = ({ folderId, videosKey, workspaceId }: Props) => {
+  const { isOnline } = useNetwork()
   
   const { data: videoData } = useQueryData([videosKey], () =>
     getAllUserVideos(folderId)
@@ -31,12 +34,16 @@ const Videos = ({ folderId, videosKey, workspaceId }: Props) => {
       </div>
       <section
         className={cn(
-          videosStatus !== 200
-            ? 'p-5'
-            : 'grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'
+          (videosStatus !== 200 || !isOnline) ? 'p-5 flex justify-center' :
+          'grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'
         )}
       >
-        {videosStatus === 200 ? (
+        {!isOnline ? (
+          <div className="flex flex-col items-center gap-2 py-4 text-neutral-400">
+            <WifiOff size={24} />
+            <p>You're offline. Check your internet connection.</p>
+          </div>
+        ) : videosStatus === 200 ? (
           videos.map((video) => (
             <VideoCard
               key={video.id}
@@ -45,7 +52,7 @@ const Videos = ({ folderId, videosKey, workspaceId }: Props) => {
             />
           ))
         ) : (
-          <p className="text-[#BDBDBD]"> No videos in workspace</p>
+          <p className="text-[#BDBDBD]">No videos in workspace</p>
         )}
       </section>
     </div>
