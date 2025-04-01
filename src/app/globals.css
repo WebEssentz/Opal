@@ -111,6 +111,7 @@
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
+  height: 4px; /* Added for horizontal scrollbar */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -123,7 +124,16 @@
   border: transparent;
 }
 
+/* Specific styling for horizontal scrollbar */
+.custom-scrollbar::-webkit-scrollbar-thumb:horizontal {
+  background-color: #4B5563;
+  border-radius: 20px;
+  min-width: 40px; /* Ensures a minimum grab area */
+}
 
+.custom-scrollbar::-webkit-scrollbar-track:horizontal {
+  background: transparent;
+}
 .fade-layer--side {
   mask-image: linear-gradient(to left, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 20%);
 }

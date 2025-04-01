@@ -1,7 +1,7 @@
 "use client"
 import FolderDuotone from '@/components/icons/folder-duotone'
 import React from 'react'
-import { ArrowRight, WifiOff } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Folder from './folder'
 import { useQueryData } from '@/hooks/useQueryData'
@@ -9,7 +9,6 @@ import { getWorkspaceFolders } from '@/actions/workspace'
 import { useMutationDataState } from '@/hooks/useMutationData'
 import { useDispatch } from 'react-redux'
 import { FOLDERS } from '@/redux/slices/folders'
-import { useNetwork } from '@/hooks/use-network'
 
 type Props = {
   workspaceId: string
@@ -31,7 +30,6 @@ export type FoldersProps = {
 
 const Folders = ({ workspaceId }: Props) => {
   const dispatch = useDispatch()
-  const { isOnline } = useNetwork()
 
   const { data, isFetched } = useQueryData(
     ['workspace-folders'],
@@ -60,35 +58,30 @@ const Folders = ({ workspaceId }: Props) => {
       </div>
       <section 
         className={cn(
-          (status !== 200 || !isOnline) && 'justify-center',
-          'flex items-center gap-4 overflow-x-auto w-full'
+          status !== 200 && 'justify-center',
+          'flex items-center gap-4 overflow-x-auto w-full custom-scrollbar pb-2'
         )}
       >
-        {!isOnline ? (
-          <div className="flex flex-col items-center gap-2 py-4 text-neutral-400">
-            <WifiOff size={24} />
-            <p>You're offline. Check your internet connection.</p>
-          </div>
-        ) : status !== 200 ? (
-          <p className='text-neutral-300'>No folders in workspace</p> 
-        ) : (
+        {status === 200 ? (
           <>
-            {latestVariables && latestVariables.status === 'pending' && (
-              <Folder
-                name={latestVariables.variables.name}
-                id={latestVariables.variables.id}
-                optimistic
-              />
-            )}
-            {folders.map((folder) => (
-              <Folder
-                name={folder.name}
-                count={folder._count.videos}
-                id={folder.id}
-                key={folder.id}
-              />
-            ))}
+           {latestVariables && latestVariables.status === 'pending' && (
+            <Folder
+              name={latestVariables.variables.name}
+              id={latestVariables.variables.id}
+              optimistic
+            />
+           )}
+           {folders.map((folder) => (
+            <Folder
+              name={folder.name}
+              count={folder._count.videos}
+              id={folder.id}
+              key={folder.id}
+            />
+          ))}
           </>
+        ) : (
+          <p className='text-neutral-300'>No folders in workspace</p> 
         )}
       </section>
     </div>

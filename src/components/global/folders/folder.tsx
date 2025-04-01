@@ -169,7 +169,7 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
 
       <div 
         className={cn(
-          "group",
+          "group custom-scrollbar",
           !allowFolderClicks && "pointer-events-none"
         )} 
         onClick={handleFolderClick}
