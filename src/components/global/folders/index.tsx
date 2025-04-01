@@ -59,8 +59,12 @@ const Folders = ({ workspaceId }: Props) => {
       <section 
         className={cn(
           status !== 200 && 'justify-center',
-          'flex items-center gap-4 overflow-x-auto w-full custom-scrollbar pb-2'
+          'flex items-center gap-4 overflow-x-auto w-full custom-scrollbar pb-2 snap-x snap-mandatory'
         )}
+        style={{
+          overscrollBehavior: 'contain',
+          touchAction: 'pan-x'
+        }}
       >
         {status === 200 ? (
           <>
@@ -69,6 +73,7 @@ const Folders = ({ workspaceId }: Props) => {
               name={latestVariables.variables.name}
               id={latestVariables.variables.id}
               optimistic
+              className="snap-start"
             />
            )}
            {folders.map((folder) => (
@@ -77,6 +82,7 @@ const Folders = ({ workspaceId }: Props) => {
               count={folder._count.videos}
               id={folder.id}
               key={folder.id}
+              className="snap-start"
             />
           ))}
           </>

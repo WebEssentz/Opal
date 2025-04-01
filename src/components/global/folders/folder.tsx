@@ -31,9 +31,10 @@ type Props = {
   id: string
   optimistic?: boolean
   count?: number
+  className?: string
 }
 
-const Folder = ({ id, name, optimistic, count }: Props) => {
+const Folder = ({ id, name, optimistic, count, className }: Props) => {
   const dispatch = useDispatch()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const folderCardRef = useRef<HTMLDivElement | null>(null)
@@ -170,7 +171,8 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
       <div 
         className={cn(
           "group custom-scrollbar",
-          !allowFolderClicks && "pointer-events-none"
+          !allowFolderClicks && "pointer-events-none",
+          className
         )} 
         onClick={handleFolderClick}
       >

@@ -107,11 +107,25 @@
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #4B5563 transparent;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* Enables momentum scrolling on iOS */
+}
+
+/* Hide scrollbar on mobile devices while preserving functionality */
+@media (max-width: 768px) {
+  .custom-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 }
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
-  height: 4px; /* Added for horizontal scrollbar */
+  height: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
