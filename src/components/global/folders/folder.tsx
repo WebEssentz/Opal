@@ -1,7 +1,7 @@
 'use client'
 import { cn } from '@/lib/utils'
 import { usePathname, useRouter } from 'next/navigation'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Loader from '../loader'
 import FolderDuotone from '@/components/icons/folder-duotone'
 import { useMutationData, useMutationDataState } from '@/hooks/useMutationData'
@@ -42,6 +42,15 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
   const isMobile = useIsMobile()
   const [onRename, setOnRename] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [allowFolderClicks, setAllowFolderClicks] = useState(true);
+
+  useEffect(() => {
+    if (showDeleteDialog) {
+      setAllowFolderClicks(false);
+      const timer = setTimeout(() => setAllowFolderClicks(true), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [showDeleteDialog]);
 
   const Rename = () => setOnRename(true)
   const Renamed = () => setOnRename(false)
@@ -115,10 +124,28 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
 
   return (
     <>
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
+      <AlertDialog 
+        open={showDeleteDialog} 
+        onOpenChange={setShowDeleteDialog}
+      >
+        <AlertDialogContent
+          onCloseAutoFocus={(e) => {
+            e.preventDefault();
+            folderCardRef.current?.focus();
+          }}
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[100]"
+        >
+          <div 
+            className={cn(
+              "fixed inset-0 bg-black/40 backdrop-blur-sm transition-all duration-200 -z-10",
+              showDeleteDialog ? "opacity-100" : "opacity-0 pointer-events-none"
+            )}
+            aria-hidden="true"
+          />
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle aria-label="Delete folder confirmation">
+              Are you absolutely sure?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the folder
               and remove all videos within it.
@@ -126,7 +153,7 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-500 hover:bg-red-600 text-white"
             >
@@ -140,12 +167,27 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="group" onClick={handleFolderClick}>
+      <div 
+        className={cn(
+          "group",
+          !allowFolderClicks && "pointer-events-none"
+        )} 
+        onClick={handleFolderClick}
+      >
         <div
           ref={folderCardRef}
+          tabIndex={0}
+          role="button"
+          aria-label={`${name} folder containing ${count || 0} videos`}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleFolderClick();
+            }
+          }}
           className={cn(
             optimistic && 'opacity-60',
-            'flex hover:bg-neutral-800 cursor-pointer transition duration-150 items-center gap-2 justify-between w-[250px] py-4 px-4 rounded-lg border-[1px] border-neutral-800'
+            'flex hover:bg-neutral-800 cursor-pointer transition duration-150 items-center gap-2 justify-between w-[250px] py-4 px-4 rounded-lg border-[1px] border-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-700'
           )}
           {...longPressProps}
         >
@@ -185,7 +227,7 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
             <FolderDuotone />
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <button className="rounded-full p-2 hover:bg-neutral-700/50 transition-colors opacity-0 group-hover:opacity-100">
+                <button className="rounded-full p-2 hover:bg-neutral-700/50 transition-colors md:opacity-0 opacity-100 md:group-hover:opacity-100">
                   <MoreVertical className="h-4 w-4 text-neutral-400" />
                 </button>
               </DropdownMenuTrigger>

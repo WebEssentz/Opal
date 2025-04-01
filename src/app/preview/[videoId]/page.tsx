@@ -13,10 +13,12 @@ const VideoPage = async ({params: { videoId } }: Props) => {
 
   await query.prefetchQuery({
     queryKey: ['preview-video'],
-    // queryFn: () => getPreviewVideo(params.videoId),
+    queryFn: () => getPreviewVideo(videoId),
   })
   return (
-    <HydrationBoundary state={dehydrate(query)}></HydrationBoundary>
+    <HydrationBoundary state={dehydrate(query)}>
+      
+    </HydrationBoundary>
   )
 }
 
